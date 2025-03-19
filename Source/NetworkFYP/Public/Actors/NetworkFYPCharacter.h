@@ -72,11 +72,12 @@ protected:
 	void StopFire();
 
 	/* Implemented with _Implementation version due to Server specifier. Reliable specifier ensures that the server will receive this, but it goes into a queue that can overflow, restrict usage. */
+	/* NOTE: Server prefix is included to match UE naming convention for server RPCs */
 	/// <summary>
 	/// Spawn projectile and fire projectile
 	/// </summary>
 	UFUNCTION(Server, Reliable)
-	void HandleFire();
+	void ServerHandleFire();
 
 #pragma endregion
 

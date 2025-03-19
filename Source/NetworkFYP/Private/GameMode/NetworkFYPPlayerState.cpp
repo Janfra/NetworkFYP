@@ -2,7 +2,70 @@
 
 
 #include "GameMode/NetworkFYPPlayerState.h"
+#include "GameMode/NetworkFYPGameMode.h"
 #include "Net/UnrealNetwork.h"
+
+void ANetworkFYPPlayerState::TryGetCallbackOnValidPlayerState(FDynamicValidPlayerStateFoundDelegate Delegate, FTimerHandle& ReattemptHandle, TSoftObjectPtr<APlayerController> TargetPlayer)
+{
+	if (!TargetPlayer.IsValid()) 
+	{
+		return;
+	}
+
+	if (ReattemptHandle.IsValid()) 
+	{
+		UE_LOG(LogNetworkFYPGameMode, Warning, TEXT("Try Get Callback On Valid Player State has been cancelled due to given reattempt handle already being valid. Ignore in case that this function was called again before completing."))
+		return;
+	}
+
+	APlayerController* player = TargetPlayer.Get();
+	if (!player) 
+	{
+		return;
+	}
+
+	if (ANetworkFYPPlayerState* playerState = player->GetPlayerState<ANetworkFYPPlayerState>()) 
+	{
+		Delegate.ExecuteIfBound(playerState);
+		return;
+	}
+
+	FTimerManager& timerManager = player->GetWorldTimerManager();
+	const float ReattemptFor = 1.0f;
+	FTimerManagerTimerParameters params;
+	params.bLoop = false;
+	params.bMaxOncePerFrame = true;
+
+	timerManager.SetTimer(ReattemptHandle, ReattemptFor, params);
+	timerManager.SetTimerForNextTick([&ReattemptHandle, TargetPlayer, Delegate] {ReattemptToFindValidPlayerStateForCallback(ReattemptHandle, TargetPlayer, Delegate); });
+}
+
+void ANetworkFYPPlayerState::ReattemptToFindValidPlayerStateForCallback(FTimerHandle& ReattemptHandle, TSoftObjectPtr<APlayerController> TargetPlayer, FDynamicValidPlayerStateFoundDelegate Delegate)
+{
+	if (!TargetPlayer.IsValid() || !ReattemptHandle.IsValid())
+	{
+		return;
+	}
+
+	APlayerController* player = TargetPlayer.Get();
+	if (!player)
+	{
+		return;
+	}
+
+	FTimerManager& timerManager = player->GetWorldTimerManager();
+	if (ANetworkFYPPlayerState* playerState = player->GetPlayerState<ANetworkFYPPlayerState>())
+	{
+		Delegate.ExecuteIfBound(playerState);
+		timerManager.ClearTimer(ReattemptHandle);
+		return;
+	}
+
+	if (timerManager.TimerExists(ReattemptHandle)) 
+	{
+		timerManager.SetTimerForNextTick([&ReattemptHandle, TargetPlayer, Delegate] {ReattemptToFindValidPlayerStateForCallback(ReattemptHandle, TargetPlayer, Delegate); });
+	}
+}
 
 void ANetworkFYPPlayerState::ClientInitialize(AController* Controller)
 {
@@ -48,6 +111,12 @@ void ANetworkFYPPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ANetworkFYPPlayerState, CustomName);
+}
+
+void ANetworkFYPPlayerState::SetIsLocallyPaused(const bool bPaused)
+{
+	bIsLocallyPaused = bPaused;
+	OnDynamicLocallyPaused.Broadcast(bIsLocallyPaused);
 }
 
 void ANetworkFYPPlayerState::TrySetPlayerCustomName(const FString& NewName)

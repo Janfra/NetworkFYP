@@ -235,7 +235,7 @@ void ANetworkFYPCharacter::StartFire()
 		bIsFiringWeapon = true;
 		UWorld* World = GetWorld();
 		World->GetTimerManager().SetTimer(FiringTimer, this, &ANetworkFYPCharacter::StopFire, FireRate, false);
-		HandleFire();
+		ServerHandleFire();
 	}
 }
 
@@ -245,7 +245,7 @@ void ANetworkFYPCharacter::StopFire()
 }
 
 /* Only called on the server due to having the Server specifier, also requiring a special name */
-void ANetworkFYPCharacter::HandleFire_Implementation()
+void ANetworkFYPCharacter::ServerHandleFire_Implementation()
 {
 	FVector spawnLocation = GetActorLocation() + (GetActorRotation().Vector() * 100.0f) + (GetActorUpVector() * 50.0f);
 	FRotator spawnRotation = GetActorRotation();
