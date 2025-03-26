@@ -26,6 +26,36 @@ void ACollectableActor::BeginPlay()
 	collision->OnComponentEndOverlap.AddDynamic(this, &ACollectableActor::OnTriggerExit);
 }
 
+void ACollectableActor::AttemptToCollect(AActor* OtherActor)
+{
+	ACharacter* character = Cast<ACharacter>(OtherActor);
+	if (!character)
+	{
+		return;
+	}
+
+	if (UWorld* world = GetWorld())
+	{
+		if (ATeamCollectionGameState* gameState = Cast<ATeamCollectionGameState>(world->GetGameState()))
+		{
+			if (ATeamPlayerState* playerState = Cast<ATeamPlayerState>(character->GetPlayerState()))
+			{
+				/* Testing score: update score and destroy */
+				SetNetDormancy(ENetDormancy::DORM_Awake);
+				FCollectionScoreData collectionData;
+				collectionData.CollectedActor = this;
+				gameState->RegisterCollectionScore(playerState, collectionData);
+				OnDynamicCollected.Broadcast();
+
+				if (GetLocalRole() == ENetRole::ROLE_Authority || GetNetMode() < ENetMode::NM_Client)
+				{
+					Destroy();
+				}
+			}
+		}
+	}
+}
+
 void ACollectableActor::OnTriggerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor) 
@@ -33,31 +63,7 @@ void ACollectableActor::OnTriggerEnter(UPrimitiveComponent* OverlappedComponent,
 		return;
 	}
 
-	ACharacter* character = Cast<ACharacter>(OtherActor);
-	if (!character) 
-	{
-		return;
-	}
-
-	if (UWorld* world = GetWorld()) 
-	{
-		if (ATeamCollectionGameState* gameState = Cast<ATeamCollectionGameState>(world->GetGameState())) 
-		{
-			if (ATeamPlayerState* playerState = Cast<ATeamPlayerState>(character->GetPlayerState())) 
-			{
-				/* Testing score: update score and destroy */
-				SetNetDormancy(ENetDormancy::DORM_Awake);
-				FCollectionScoreData collectionData;
-				collectionData.CollectedActor = this;
-				gameState->RegisterCollectionScore(playerState, collectionData);
-
-				if (GetLocalRole() == ENetRole::ROLE_Authority) 
-				{
-					Destroy();
-				}
-			}
-		}
-	}
+	AttemptToCollect(OtherActor);
 }
 
 void ACollectableActor::OnTriggerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
