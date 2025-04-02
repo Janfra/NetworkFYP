@@ -114,23 +114,29 @@ public:
 
 protected:
 
-	/* Sets the max health, this value does not change. Not replicated. */
+	/// <summary>
+	/// Sets the max health, this value does not change. Not replicated.
+	/// </summary>
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float MaxHealth;
 
-	/* Sets the current health, this value is replicated. */
+	/// <summary>
+	/// Sets the current health, this value is replicated.
+	/// </summary>
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealth)
 	float CurrentHealth;
 
-	/* Health before update */
-	float OldHealth;
-
-	/* Storing information about damage taken to inform during events */
-	FCachedDamageTaken LastDamageTaken;
-
-	/* RepNotify for changes made to current health. */
+	/// <summary>
+	/// RepNotify for changes made to current health.
+	/// </summary>
+	/// <param name="LastHealthValue">Current health value before being modified</param>
 	UFUNCTION()
-	void OnRep_CurrentHealth();
+	void OnRep_CurrentHealth(float LastHealthValue);
+
+	/// <summary>
+	/// Storing information about damage taken to inform during events
+	/// </summary>
+	FCachedDamageTaken LastDamageTaken;
 
 /// <summary>
 /// Methods Section
@@ -140,8 +146,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	/* Response to health update. Called on server immediately after modification, and on client in response to a RepNotify */
-	void OnHealthUpdate();
+	/// <summary>
+	/// Response to health update. Called on server immediately after modification, and on client in response to a RepNotify
+	/// </summary>
+	void OnHealthUpdate(float LastHealthValue);
 
 	/// <summary>
 	/// Health has been depleted

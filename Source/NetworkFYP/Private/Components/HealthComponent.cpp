@@ -15,7 +15,6 @@ UHealthComponent::UHealthComponent()
 	/* Initialise health */
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
-	OldHealth = CurrentHealth;
 
 	/* Set to replicate by default */
 	SetIsReplicatedByDefault(true);
@@ -38,9 +37,9 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UHealthComponent, CurrentHealth);
 }
 
-void UHealthComponent::OnRep_CurrentHealth()
+void UHealthComponent::OnRep_CurrentHealth(float LastHealthValue)
 {
-	OnHealthUpdate();
+	OnHealthUpdate(LastHealthValue);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -55,10 +54,11 @@ void UHealthComponent::SetCurrentHealth(float HealthValue)
 		return;
 	}
 
+	float lastHealthValue = CurrentHealth;
 	CurrentHealth = FMath::Clamp(HealthValue, 0.0f, MaxHealth);
 
 	/* Ensures that both server and client have parallel calls to this function. Necessary since server will not receive the RepNotify */
-	OnHealthUpdate();
+	OnHealthUpdate(lastHealthValue);
 }
 
 const float UHealthComponent::ApplyDamage(float DamageValue, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -70,9 +70,9 @@ const float UHealthComponent::ApplyDamage(float DamageValue, FDamageEvent const&
 }
 
 /* Shared */
-void UHealthComponent::OnHealthUpdate()
+void UHealthComponent::OnHealthUpdate(float LastHealthValue)
 {
-	if (CurrentHealth < OldHealth) 
+	if (CurrentHealth < LastHealthValue)
 	{
 		if (CurrentHealth <= 0.0f)
 		{
@@ -84,14 +84,11 @@ void UHealthComponent::OnHealthUpdate()
 			OnDamageTaken.Broadcast();
 		}
 	}
-	else if (CurrentHealth > OldHealth) 
+	else if (CurrentHealth > LastHealthValue)
 	{
 		OnDynamicHealed.Broadcast();
 		OnHealed.Broadcast();
 	}
-
-	OldHealth = CurrentHealth;
-	/* General logic, must happen regardless */
 }
 
 void UHealthComponent::Died()

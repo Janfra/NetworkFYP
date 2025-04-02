@@ -4,7 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "OnlineSessionClient.h"
 #include "NetworkFYPController.generated.h"
+
+ //Need to forward declare classes used 
+class FOnlineSessionSearch;
+class FOnlineSessionSearchResult;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDynamicSessionFound, FString, SessionName);
 
 /**
  * 
@@ -15,6 +22,8 @@ class NETWORKFYP_API ANetworkFYPController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	virtual void BeginPlay();
+
 	virtual bool SetPause(bool bPause, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -25,6 +34,79 @@ public:
 
 	class ANetworkFYPPlayerState* GetNetworkPlayerState();
 
+	UPROPERTY(BlueprintAssignable)
+	FDynamicSessionFound OnDynamicSessionFound;
+
+protected:
+	/// <summary>
+	/// Signs player into EOS Game Services
+	/// </summary>
+	void Login();
+
+	/// <summary>
+	/// Callback method. Called when signing into EOS Game Services completes.
+	/// </summary>
+	/// <returns></returns>
+	void OnHandleLoginCompleted(int32 LocalUserNum, bool bWasSuccessful, const FUniqueNetId& UserId, const FString& Error);
+
+	/// <summary>
+	/// Function to find EOS sessions. Hardcoded attribute key/value pair to keep things simple
+	/// </summary>
+	/// <param name="SearchKey">Key of Pair value to search for</param>
+	/// <param name="SearchValue">Value associated to key to search for</param>
+	void FindSessions(FName SearchKey = "KeyName", FString SearchValue = "KeyValue");
+
+	/// <summary>
+	/// Callback function. This function will run when the session is found.
+	/// </summary>
+	/// <param name="bWasSuccessful">Was the session found</param>
+	/// <param name="Search">Found results</param>
+	void HandleFindSessionsCompleted(bool bWasSuccessful, TSharedRef<FOnlineSessionSearch> Search);
+
+	/// <summary>
+	/// Function to join the EOS session. 
+	/// </summary>
+	void JoinSession();
+
+	/// <summary>
+	/// Callback function. This function will run when the session is joined. 
+	/// </summary>
+	/// <param name="SessionName"></param>
+	/// <param name="Result"></param>
+	void HandleJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+/// <summary>
+/// Property Section
+/// </summary>
+protected:
+	/// <summary>
+	/// Delegate to bind callback event for login
+	/// </summary>
+	FDelegateHandle LoginDelegateHandle;
+
+	/// <summary>
+	/// Delegate to bind callback event for join session.
+	/// </summary>
+	FDelegateHandle JoinSessionDelegateHandle;
+
+	/// <summary>
+	/// Delegate to bind callback event for when sessions are found.
+	/// </summary>
+	FDelegateHandle FindSessionsDelegateHandle;
+
+	/// <summary>
+	/// This is the connection string for the client to connect to the dedicated server.
+	/// </summary>
+	FString ConnectString;
+
+	/// <summary>
+	/// This is used to store the session to join information from the search. You could pass it as a paramter to JoinSession() instead. 
+	/// </summary>
+	FOnlineSessionSearchResult* SessionToJoin;
+
 private:
+	/// <summary>
+	/// Keeps a reference to the network player state for convenience
+	/// </summary>
 	TObjectPtr<class ANetworkFYPPlayerState> ANetworkPlayerState;
 };

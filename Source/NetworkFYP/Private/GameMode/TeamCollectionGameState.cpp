@@ -96,6 +96,13 @@ void ATeamCollectionGameState::RegisterCollectionScore(ATeamPlayerState* PlayerS
 
 	// For now just add a hardcoded value for testing
 	AddScoreToTeam(PlayerState, 100.0f);
+	if (GetNetMode() < ENetMode::NM_Client) 
+	{
+		// Could have a namespace with all the stats and leaderboard names as consts for easier access and less error prone
+		const FString CollectionStatName = "NUMBEROFCOLLECTEDCOINS";
+		const FString CollectionLeaderboard = "COINCOLLECTORSLEADERBOARD";
+		PlayerState->UpdateStat(CollectionStatName, 1);
+	}
 }
 
 void ATeamCollectionGameState::SetCachedRequiredScoreToWin(const float ScoreToWin)
@@ -130,7 +137,30 @@ void ATeamCollectionGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 void ATeamCollectionGameState::Destroyed()
 {
-	if (IsValid(TeamA)) 
+	FinaliseTeams();
+}
+
+void ATeamCollectionGameState::InitialiseTeams()
+{
+	/* Create and add replicated team subobjects */
+
+	TeamA = CreateTeam(ETeam::TeamA);
+
+	/* Removed due to not having source engine */
+	//MARK_PROPERTY_DIRTY_FROM_NAME(ATeamCollectionGameState, TeamA, this);
+
+	TeamB = CreateTeam(ETeam::TeamB);
+	
+	/* Removed due to not having source engine */
+	//MARK_PROPERTY_DIRTY_FROM_NAME(ATeamCollectionGameState, TeamB, this);
+
+	AddReplicatedSubObject(TeamA);
+	AddReplicatedSubObject(TeamB);
+}
+
+void ATeamCollectionGameState::FinaliseTeams()
+{
+	if (IsValid(TeamA))
 	{
 		RemoveReplicatedSubObject(TeamA);
 	}
@@ -141,28 +171,13 @@ void ATeamCollectionGameState::Destroyed()
 	}
 }
 
-void ATeamCollectionGameState::InitialiseTeams()
+UTeam* ATeamCollectionGameState::CreateTeam(ETeam AssignTeam)
 {
-	ETeam currentTeam = ETeam::TeamA;
-	FString teamName = UEnum::GetValueAsString(currentTeam);
-	TeamA = NewObject<UTeam>();
-	SetupTeam(TeamA, currentTeam);
+	FString teamName = UEnum::GetValueAsString(AssignTeam);
+	UTeam* createdTeam = NewObject<UTeam>();
+	SetupTeam(createdTeam, AssignTeam);
 	UE_LOG(LogTeamCollectionGameMode, Log, TEXT("Created team data for %s"), *teamName);
-
-	/* Removed due to not having source engine */
-	//MARK_PROPERTY_DIRTY_FROM_NAME(ATeamCollectionGameState, TeamA, this);
-
-	currentTeam = ETeam::TeamB;
-	teamName = UEnum::GetValueAsString(currentTeam);
-	TeamB = NewObject<UTeam>();
-	SetupTeam(TeamB, currentTeam);
-	UE_LOG(LogTeamCollectionGameMode, Log, TEXT("Created team data for %s"), *teamName);
-	
-	/* Removed due to not having source engine */
-	//MARK_PROPERTY_DIRTY_FROM_NAME(ATeamCollectionGameState, TeamB, this);
-
-	AddReplicatedSubObject(TeamA);
-	AddReplicatedSubObject(TeamB);
+	return createdTeam;
 }
 
 void ATeamCollectionGameState::OnRep_TeamA(UTeam* LastValue)

@@ -60,8 +60,10 @@ public:
 	FDynamicTeamScoreUpdated OnScoreUpdated;
 
 protected:
+
+	/* BEGIN SHARED SETUP TO REPLICATE SUBOBJECTS */
 	/// <summary>
-	/// Replication setup
+	/// Replication setup, declares which properties must be replicated and how
 	/// </summary>
 	/// <param name="OutLifetimeProps"></param>
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -71,6 +73,7 @@ protected:
 	/// </summary>
 	/// <returns>Returns whether replication is implemented</returns>
 	virtual bool IsSupportedForNetworking() const override { return true; }
+	/* END SHARED SETUP TO REPLICATE SUBOBJECTS */
 
 	/* Method to ensure parallel calls between server and client */
 	/// <summary>
@@ -195,6 +198,25 @@ protected:
 	void InitialiseTeams();
 
 	/// <summary>
+	/// Remove the teams from the list of subobjects
+	/// </summary>
+	void FinaliseTeams();
+	
+	/// <summary>
+	/// Returns created team after setup
+	/// </summary>
+	/// <param name="AssignTeam">The team to assign to the created team</param>
+	/// <returns>Created and initialised team</returns>
+	UTeam* CreateTeam(ETeam AssignTeam);
+
+	/// <summary>
+	/// Sets initial values for a team
+	/// </summary>
+	/// <param name="Team">Team object to initialise</param>
+	/// <param name="AssignTeam">Which team to assign</param>
+	void SetupTeam(UTeam* Team, ETeam AssignTeam);
+
+	/// <summary>
 	/// On Team A replication notify
 	/// </summary>
 	/// <param name="LastValue">Value before replication</param>
@@ -207,13 +229,6 @@ protected:
 	/// <param name="LastValue">Value before replication</param>
 	UFUNCTION()
 	void OnRep_TeamB(UTeam* LastValue);
-
-	/// <summary>
-	/// Sets initial values for a team
-	/// </summary>
-	/// <param name="Team">Team object to initialise</param>
-	/// <param name="AssignTeam">Which team to assign</param>
-	void SetupTeam(UTeam* Team, ETeam AssignTeam);
 
 	/// <summary>
 	/// Returns the team the given player is a part of

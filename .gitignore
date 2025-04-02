@@ -75,3 +75,8 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Ignoring a few files due to having sensitive information
+Config/DefaultEngine.ini
+ClientOne.bat
+Server.bat

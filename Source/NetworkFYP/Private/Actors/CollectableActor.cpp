@@ -47,6 +47,7 @@ void ACollectableActor::AttemptToCollect(AActor* OtherActor)
 				gameState->RegisterCollectionScore(playerState, collectionData);
 				OnDynamicCollected.Broadcast();
 
+				/* Actors spawned only on the client, have the client as the authority since they are the only ones owning them. That shouldn't be an issue in this case, but have in mind those situations by accounting for whether is a server or a client instead. */
 				if (GetLocalRole() == ENetRole::ROLE_Authority || GetNetMode() < ENetMode::NM_Client)
 				{
 					Destroy();
