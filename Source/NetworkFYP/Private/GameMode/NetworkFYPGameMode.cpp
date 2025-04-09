@@ -7,6 +7,8 @@
 #include "GameMode/NetworkFYPPlayerState.h"
 #include "UObject/ConstructorHelpers.h"
 
+#include "NetworkUtils.h"
+
 DEFINE_LOG_CATEGORY(LogNetworkFYPGameMode);
 
 ANetworkFYPGameMode::ANetworkFYPGameMode()
@@ -20,8 +22,13 @@ ANetworkFYPGameMode::ANetworkFYPGameMode()
 
 	// Use my player controller that handles login into EOS
 	PlayerControllerClass = ANetworkFYPController::StaticClass();
-	GameSessionClass = ANetworkFYPGameSession::StaticClass();
 	PlayerStateClass = ANetworkFYPPlayerState::StaticClass();
+
+	// Lobbies do not need a derived version of game session
+	if (!NetworkUtils::IsP2PMode()) 
+	{
+		GameSessionClass = ANetworkFYPGameSession::StaticClass();
+	}
 
 	// In a real game you may want to have a waiting room before sending players to the level. You can use seamless travel to do this and persist the EOS Session across levels. 
 	// This is omitted in this tutorial to keep things simple.

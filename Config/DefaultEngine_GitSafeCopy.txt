@@ -303,6 +303,7 @@ DefaultPlatformService=EOS
 +NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="OnlineSubsystemEOS.NetDriverEOS",DriverClassNameFallback="OnlineSubsystemUtils.IpNetDriver")
 
 [/Script/OnlineSubsystemEOS.NetDriverEOS]
+;Set this to false when running in client-server mode, set to true when in P2P mode. Used for the lobbies made by players.
 bIsUsingP2PSockets=true
 
 [/Script/OnlineSubsystemEOS.EOSSettings]

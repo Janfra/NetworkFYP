@@ -61,7 +61,7 @@ protected:
 	/// </summary>
 	/// <param name="bWasSuccessful">Was the session found</param>
 	/// <param name="Search">Found results</param>
-	void HandleFindSessionsCompleted(bool bWasSuccessful, TSharedRef<FOnlineSessionSearch> Search);
+	void OnHandleFindSessionsCompleted(bool bWasSuccessful, TSharedRef<FOnlineSessionSearch> Search);
 
 	/// <summary>
 	/// Function to join the EOS session. 
@@ -73,7 +73,19 @@ protected:
 	/// </summary>
 	/// <param name="SessionName"></param>
 	/// <param name="Result"></param>
-	void HandleJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	void OnHandleJoinSessionCompleted(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+	#pragma region P2P Only Section
+#if P2PMODE
+	void CreateLobby(FName KeyName = "KeyName", FString KeyValue = "KeyValue");
+
+	void OnHandleCreateLobbyCompleted(FName EOSLobbyName, bool bWasSuccessful, FSoftObjectPath Level);
+
+	void SetupNotifications();
+
+	void OnHandleParticipantChanged(FName EOSLobbyName, const FUniqueNetId& NetId, bool bJoined);
+#endif
+#pragma endregion
 
 /// <summary>
 /// Property Section
@@ -103,6 +115,20 @@ protected:
 	/// This is used to store the session to join information from the search. You could pass it as a paramter to JoinSession() instead. 
 	/// </summary>
 	FOnlineSessionSearchResult* SessionToJoin;
+
+	#pragma region P2P Only Section
+#if P2PMODE
+	/// <summary>
+	/// Delegate to bind callback event for creating lobby
+	/// </summary>
+	FDelegateHandle CreateLobbyDelegateHandle;
+
+	/// <summary>
+	/// Name for the lobby
+	/// </summary>
+	FString LobbyName = "LobbyName";
+#endif
+#pragma endregion
 
 private:
 	/// <summary>

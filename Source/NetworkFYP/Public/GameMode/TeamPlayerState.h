@@ -16,6 +16,13 @@ class NETWORKFYP_API ATeamPlayerState : public ANetworkFYPPlayerState
 	GENERATED_BODY()
 	
 public:
-	/* Specifies which team this player is. Used to easily access team related data in game state. WIP */
+	/// <summary>
+	/// Specifies which team this player is in
+	/// </summary>
 	ETeam PlayerTeam;
+
+	/// <summary>
+	/// Score accumulated by this player
+	/// </summary>
+	float CollectedScore;
 };
