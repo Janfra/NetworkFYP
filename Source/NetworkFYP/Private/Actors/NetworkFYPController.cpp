@@ -184,7 +184,7 @@ void ANetworkFYPController::FindSessions(FName SearchKey, FString SearchValue)
     Search->QuerySettings.Set(SearchKey, SearchValue, EOnlineComparisonOp::Equals); // Seach using our Key/Value pair
     if (NetworkUtils::IsP2PMode()) 
     {
-        Search->QuerySettings.Set(TEXT("SEARCH_LOBBIES"), true, EOnlineComparisonOp::Equals);
+        Search->QuerySettings.Set(FName(TEXT("LOBBYSEARCH")), true, EOnlineComparisonOp::Equals);
         UE_LOG(LogTemp, Log, TEXT("Finding lobby..."));
     }
     else 
@@ -391,7 +391,7 @@ void ANetworkFYPController::CreateLobby(FName KeyName, FString KeyValue)
     CreateLobbyDelegateHandle =
         Session->AddOnCreateSessionCompleteDelegate_Handle(FOnCreateSessionCompleteDelegate::CreateUObject(
             this,
-            &ThisClass::OnHandleCreateLobbyCompleted, FSoftObjectPath("Game/Content/ThirdPerson/Maps/ThirdPersonMap?listen")));
+            &ThisClass::OnHandleCreateLobbyCompleted, FSoftObjectPath()));
 
     TSharedRef<FOnlineSessionSettings> SessionSettings = MakeShared<FOnlineSessionSettings>();
     SessionSettings->NumPublicConnections = 2; //We will test our sessions with 2 players to keep things simple
@@ -425,7 +425,7 @@ void ANetworkFYPController::OnHandleCreateLobbyCompleted(FName EOSLobbyName, boo
     if (bWasSuccessful && Level.IsValid())
     {
         UE_LOG(LogTemp, Log, TEXT("Lobby: %s Created!"), *EOSLobbyName.ToString());
-        FString Map = Level.GetAssetPathString();
+        FString Map = "Game/Content/ThirdPerson/Maps/ThirdPersonMap?listen";
         FURL TravelURL;
         TravelURL.Map = Map;
         GetWorld()->Listen(TravelURL);
