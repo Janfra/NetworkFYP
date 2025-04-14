@@ -101,7 +101,7 @@ void ATeamCollectionGameState::RegisterCollectionScore(ATeamPlayerState* PlayerS
 		// Could have a namespace with all the stats and leaderboard names as consts for easier access and less error prone
 		const FString CollectionStatName = "NUMBEROFCOLLECTEDCOINS";
 		const FString CollectionLeaderboard = "COINCOLLECTORSLEADERBOARD";
-		PlayerState->UpdateStat(CollectionStatName, 1);
+		// PlayerState->UpdateStat(CollectionStatName, 1);
 	}
 }
 

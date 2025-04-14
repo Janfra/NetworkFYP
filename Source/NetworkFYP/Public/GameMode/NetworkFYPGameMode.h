@@ -33,6 +33,8 @@ protected:
 	UFUNCTION()
 	virtual void PlayerRespawn(ACharacter* Character, AController* FallbackController);
 
+	void ClearControllerPawn(AController* Controller) const;
+
 	UPROPERTY(BlueprintAssignable)
 	FDynamicPlayerRespawn OnPlayerRespawn;
 };

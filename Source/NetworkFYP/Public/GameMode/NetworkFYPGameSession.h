@@ -25,52 +25,52 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
-	virtual bool ProcessAutoLogin() override;
+	//virtual bool ProcessAutoLogin() override;
 
-	virtual void NotifyLogout(const APlayerController* ExitingPlayer) override;
+	//virtual void NotifyLogout(const APlayerController* ExitingPlayer) override;
 
-	virtual void RegisterPlayer(APlayerController* NewPlayer, const FUniqueNetIdRepl& UniqueId, bool bWasFromInvite) override;
+	//virtual void RegisterPlayer(APlayerController* NewPlayer, const FUniqueNetIdRepl& UniqueId, bool bWasFromInvite) override;
 
-	void OnHandleRegisterPlayerCompleted(FName EOSSessionName, const TArray<FUniqueNetIdRef>& PlayerIds, bool bWasSuccesful);
+	//void OnHandleRegisterPlayerCompleted(FName EOSSessionName, const TArray<FUniqueNetIdRef>& PlayerIds, bool bWasSuccesful);
 
-	virtual void UnregisterPlayer(const APlayerController* ExitingPlayer) override;
+	//virtual void UnregisterPlayer(const APlayerController* ExitingPlayer) override;
 
-	void OnHandleUnregisterPlayerCompleted(FName EOSSessionName, const TArray<FUniqueNetIdRef>& PlayerIds, bool bWasSuccesful);
+	//void OnHandleUnregisterPlayerCompleted(FName EOSSessionName, const TArray<FUniqueNetIdRef>& PlayerIds, bool bWasSuccesful);
 
-	void CreateDedicatedServerSession(FName KeyName = "KeyName", FString KeyValue = "KeyValue");
+	//void CreateDedicatedServerSession(FName KeyName = "KeyName", FString KeyValue = "KeyValue");
 
-	void OnHandleCreateSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
+	//void OnHandleCreateSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
 
-	void StartSession();
+	//void StartSession();
 
-	void OnHandleStartSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
+	//void OnHandleStartSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
 
-	void EndSession();
+	//void EndSession();
 
-	void OnHandleEndSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
+	//void OnHandleEndSessionCompleted(FName EOSSessionName, bool bWasSuccessful);
 
-	void DestroySession();
+	//void DestroySession();
 
-	void OnHandleDestroySessionCompleted(FName EOSSessionName, bool bWasSuccesful);
+	//void OnHandleDestroySessionCompleted(FName EOSSessionName, bool bWasSuccesful);
 
 /// <summary>
 /// Properties Section
 /// </summary>
 protected:
-	/// <summary>
-	/// Delegate to bind callback event for creating session
-	/// </summary>
-	FDelegateHandle CreateSessionDelegateHandle;
+	///// <summary>
+	///// Delegate to bind callback event for creating session
+	///// </summary>
+	//FDelegateHandle CreateSessionDelegateHandle;
 
-	FDelegateHandle RegisterPlayerDelegateHandle;
+	//FDelegateHandle RegisterPlayerDelegateHandle;
 
-	FDelegateHandle UnregisterPlayerDelegateHandle;
+	//FDelegateHandle UnregisterPlayerDelegateHandle;
 
-	FDelegateHandle StartSessionDelegateHandle;
+	//FDelegateHandle StartSessionDelegateHandle;
 
-	FDelegateHandle EndSessionDelegateHandle;
+	//FDelegateHandle EndSessionDelegateHandle;
 
-	FDelegateHandle DestroySessionDelegateHandle;
+	//FDelegateHandle DestroySessionDelegateHandle;
 
 	/// <summary>
 	/// Hardcoded for simplicity

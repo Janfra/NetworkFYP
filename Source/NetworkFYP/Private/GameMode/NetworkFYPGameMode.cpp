@@ -24,12 +24,6 @@ ANetworkFYPGameMode::ANetworkFYPGameMode()
 	PlayerControllerClass = ANetworkFYPController::StaticClass();
 	PlayerStateClass = ANetworkFYPPlayerState::StaticClass();
 
-	// Lobbies do not need a derived version of game session
-	if (!NetworkUtils::IsP2PMode()) 
-	{
-		GameSessionClass = ANetworkFYPGameSession::StaticClass();
-	}
-
 	// In a real game you may want to have a waiting room before sending players to the level. You can use seamless travel to do this and persist the EOS Session across levels. 
 	// This is omitted in this tutorial to keep things simple.
 }
@@ -46,22 +40,38 @@ void ANetworkFYPGameMode::BeginPlay()
 
 void ANetworkFYPGameMode::PlayerRespawn(ACharacter* Character, AController* FallbackController)
 {
+	// Should not provide a null character, but use fallback if all fails if possible
 	check(Character);
-	AController* CharacterController = Character->GetController();
-	// Unposses to ensure that the actor is spawned
-	Character->UnPossessed();
-
-	if (CharacterController) 
+	if (Character) 
 	{
-		CharacterController->UnPossess();
-		CharacterController->SetPawn(nullptr);
-		RestartPlayer(CharacterController);
+		// Unposses and clear controller pawn to ensure that the actor is spawned
+		AController* CharacterController = Character->GetController();
+		Character->UnPossessed();
+		if (CharacterController) 
+		{
+			ClearControllerPawn(CharacterController);
+			RestartPlayer(CharacterController);
+		}
+		else
+		{
+			ClearControllerPawn(FallbackController);
+			RestartPlayer(FallbackController);
+		}
 	}
-	else if (FallbackController)
+	else
 	{
-		FallbackController->UnPossess();
-		FallbackController->SetPawn(nullptr);
+		UE_LOG(LogNetworkFYPGameMode, Warning, TEXT("Character should be provided when respawning. Attempting to use fallback controller."));
+		ClearControllerPawn(FallbackController);
 		RestartPlayer(FallbackController);
+	}
+}
+
+void ANetworkFYPGameMode::ClearControllerPawn(AController* Controller) const
+{
+	if (Controller) 
+	{
+		Controller->UnPossess();
+		Controller->SetPawn(nullptr);
 	}
 }
 

@@ -22,7 +22,11 @@
 			]
 		},
 		{
-			"Name": "OnlineSubsystemEOS",
+			"Name": "OnlineServicesEOS",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesEOSGS",
 			"Enabled": true
 		}
 	],
