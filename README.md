@@ -1,5 +1,8 @@
 # NetworkFYP
- Exploring creating a simple online multiplayer game using Unreal Engine 5.4.4
+ Exploring creating a simple online multiplayer game using Unreal Engine 5.4.4 and Epic Online Services (EOS) with the EOS subsystem plugin.
+
+> [!WARNING]
+> EOS credentials were removed from project. Place your own credentials for testing if you would like.
 
 # Progress
 ## 1.0:
