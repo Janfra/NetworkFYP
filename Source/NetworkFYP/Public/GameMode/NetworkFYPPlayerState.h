@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/OnlineLeaderboardInterface.h"
+#include "NetworkFYPEOSStats.h"
 #include "NetworkFYPPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerKilled, FPlayerKillScoreData)
@@ -42,20 +43,20 @@ public:
 	/// </summary>
 	/// <param name="StatName">Name of the stat to update</param>
 	/// <param name="StatValue">Value to update it with</param>
-	void UpdateStat(FString StatName, int32 StatValue, FString AssociatedLeaderboardName = "");
+	void UpdateStat(FEOSStatName StatName, int32 StatValue, FEOSLeaderboardName AssociatedLeaderboardName = "");
 
 	/// <summary>
 	/// Returns the requested global leaderboard
 	/// </summary>
 	/// <param name="LeaderboardName">Requested leaderboard name</param>
-	void QueryLeaderboardGlobal(FName LeaderboardName);
+	void QueryLeaderboardGlobal(FEOSLeaderboardName LeaderboardName);
 
 	/// <summary>
 	/// Returns friends leaderboard based on a single stat
 	/// </summary>
 	/// <param name="StatName"></param>
 	/// <param name="LeaderboardName"></param>
-	void QueryLeaderboardFriends(FString StatName, FName LeaderboardName);
+	void QueryLeaderboardFriends(FEOSStatName StatName, FEOSLeaderboardName LeaderboardName);
 
 	virtual void SetPlayerName(const FString& NewName) override;
 

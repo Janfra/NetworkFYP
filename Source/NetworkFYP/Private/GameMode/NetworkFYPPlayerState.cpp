@@ -83,13 +83,24 @@ void ANetworkFYPPlayerState::ClientInitialize(AController* Controller)
 	bUseCustomPlayerNames = true;
 }
 
-void ANetworkFYPPlayerState::UpdateStat(FString StatName, int32 StatValue, FString AssociatedLeaderboardName)
+void ANetworkFYPPlayerState::UpdateStat(FEOSStatName StatName, int32 StatValue, FEOSLeaderboardName AssociatedLeaderboardName)
 {
+	if (!StatName.IsValid() || StatName.IsNone()) 
+	{
+		return;
+	}
+
 	// This function will add a StatValue to the StatName on the EOS backend.
 	// If the achievement stat threshold is meant, the achievement will unlock
 	IOnlineSubsystem* Subsystem = Online::GetSubsystem(GetWorld());
 	IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface();
 	IOnlineStatsPtr Stats = Subsystem->GetStatsInterface();
+
+	if (!Stats) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Stats interface was null."));
+		return;
+	}
 
 	// Check if player is online before trying to update stat 
 	const int LocalPlayerNum = 0;
@@ -100,15 +111,12 @@ void ANetworkFYPPlayerState::UpdateStat(FString StatName, int32 StatValue, FStri
 		return;
 	}
 
-	// All values in leaderboard and stats are in uppercase, so convert it just in case.
-	StatName = StatName.ToUpper();
-
 	// Prepare stat update by setting input arguments to update stat. 
 	FOnlineStatsUserUpdatedStats StatToUpdate = FOnlineStatsUserUpdatedStats(NetId.ToSharedRef());
 
 	// Unknown type to let backend decide
 	FOnlineStatUpdate IngestAmount = FOnlineStatUpdate(StatValue, FOnlineStatUpdate::EOnlineStatModificationType::Unknown);
-	StatToUpdate.Stats.Add(StatName, IngestAmount);
+	StatToUpdate.Stats.Add(StatName.ToString().ToUpper(), IngestAmount);
 
 	TArray<FOnlineStatsUserUpdatedStats> StatsToUpdate;
 	StatsToUpdate.Add(StatToUpdate);
@@ -128,15 +136,14 @@ void ANetworkFYPPlayerState::UpdateStat(FString StatName, int32 StatValue, FStri
 			}));
 
 	// Fetch our 2 leaderboards when updating stats. 
-	if (!AssociatedLeaderboardName.IsEmpty()) 
+	if (AssociatedLeaderboardName.IsValid() && !AssociatedLeaderboardName.IsNone())
 	{
-		const FName LeaderboardName = FName(AssociatedLeaderboardName.ToUpper());
-		QueryLeaderboardGlobal(LeaderboardName);
-		QueryLeaderboardFriends(StatName, LeaderboardName);
+		QueryLeaderboardGlobal(AssociatedLeaderboardName);
+		QueryLeaderboardFriends(StatName, AssociatedLeaderboardName);
 	}
 }
 
-void ANetworkFYPPlayerState::QueryLeaderboardGlobal(FName LeaderboardName)
+void ANetworkFYPPlayerState::QueryLeaderboardGlobal(FEOSLeaderboardName LeaderboardName)
 {
 	// This function will retrieve a global leaderboard for a certain rank range
 	// The rank range is hardcoded to 0,10. In a real game you may want to pass this as a parameter. 
@@ -193,7 +200,7 @@ void ANetworkFYPPlayerState::OnHandleQueryLeaderboarComplete(bool bWasSuccessful
 	QueryLeaderboardDelegateHandle.Reset();
 }
 
-void ANetworkFYPPlayerState::QueryLeaderboardFriends(FString StatName, FName LeaderboardName)
+void ANetworkFYPPlayerState::QueryLeaderboardFriends(FEOSStatName StatName, FEOSLeaderboardName LeaderboardName)
 {
 	// This function will retrieve a friend leaderboard with specific columns and a sorted column.
 	// For this course we are using a single Stat. 
@@ -214,8 +221,8 @@ void ANetworkFYPPlayerState::QueryLeaderboardFriends(FString StatName, FName Lea
 	// Prepare arguments. Notice the column metadata is a stat and can be different than the sorted column
 	FOnlineLeaderboardReadRef FriendLeaderboardReadRef = MakeShared<FOnlineLeaderboardRead, ESPMode::ThreadSafe>();
 	FriendLeaderboardReadRef->LeaderboardName = LeaderboardName;
-	FriendLeaderboardReadRef->ColumnMetadata.Add(FColumnMetaData(FName(StatName), EOnlineKeyValuePairDataType::Int32));
-	FriendLeaderboardReadRef->SortedColumn = FName(StatName);
+	FriendLeaderboardReadRef->ColumnMetadata.Add(FColumnMetaData(StatName, EOnlineKeyValuePairDataType::Int32));
+	FriendLeaderboardReadRef->SortedColumn = StatName;
 
 	// Create a delegate handle and pass in the function to execute once the leaderboard is fetch. 
 	// The function here is the same as with the global leaderboard. 

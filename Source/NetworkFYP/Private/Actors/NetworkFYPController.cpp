@@ -76,6 +76,10 @@ void ANetworkFYPController::Login()
         */
     IOnlineSubsystem* Subsystem = Online::GetSubsystem(GetWorld());
     IOnlineIdentityPtr Identity = Subsystem->GetIdentityInterface(); // This is the generic OSS interface that will access the EOS OSS.
+    if (!Identity) 
+    {
+        return;
+    }
 
     // If you're logged in, don't try to login again.
     // This can happen if your player travels to a dedicated server or different maps as BeginPlay() will be called each time.
@@ -117,7 +121,7 @@ void ANetworkFYPController::Login()
     else
     {
         /*
-        Fallback if the CLI parameters are empty.Useful for PIE.
+        Fallback if the CLI parameters are empty. Useful for Play In Editor.
         The type here could be developer if using the DevAuthTool, ExchangeCode if the game is launched via the Epic Games Launcher, etc...
         */
         FOnlineAccountCredentials Credentials("AccountPortal", "", "");
@@ -391,7 +395,7 @@ void ANetworkFYPController::CreateLobby(FName KeyName, FString KeyValue)
     CreateLobbyDelegateHandle =
         Session->AddOnCreateSessionCompleteDelegate_Handle(FOnCreateSessionCompleteDelegate::CreateUObject(
             this,
-            &ThisClass::OnHandleCreateLobbyCompleted, FSoftObjectPath()));
+            &ThisClass::OnHandleCreateLobbyCompleted));
 
     TSharedRef<FOnlineSessionSettings> SessionSettings = MakeShared<FOnlineSessionSettings>();
     SessionSettings->NumPublicConnections = 2; //We will test our sessions with 2 players to keep things simple
@@ -416,13 +420,13 @@ void ANetworkFYPController::CreateLobby(FName KeyName, FString KeyValue)
     }
 }
 
-void ANetworkFYPController::OnHandleCreateLobbyCompleted(FName EOSLobbyName, bool bWasSuccessful, FSoftObjectPath Level)
+void ANetworkFYPController::OnHandleCreateLobbyCompleted(FName EOSLobbyName, bool bWasSuccessful)
 {
     /* Callback function for lobby created */
     IOnlineSubsystem* Subsystem = Online::GetSubsystem(GetWorld());
     IOnlineSessionPtr Session = Subsystem->GetSessionInterface();
 
-    if (bWasSuccessful && Level.IsValid())
+    if (bWasSuccessful)
     {
         UE_LOG(LogTemp, Log, TEXT("Lobby: %s Created!"), *EOSLobbyName.ToString());
         FString Map = "Game/Content/ThirdPerson/Maps/ThirdPersonMap?listen";

@@ -7,6 +7,7 @@
 #include "GameMode/TeamPlayerState.h"
 #include "Net/Core/PushModel/PushModel.h"
 #include "Engine/ActorChannel.h"
+#include "NetworkFYPEOSStats.h"
 
 UTeam::UTeam()
 {
@@ -98,10 +99,8 @@ void ATeamCollectionGameState::RegisterCollectionScore(ATeamPlayerState* PlayerS
 	AddScoreToTeam(PlayerState, 100.0f);
 	if (GetNetMode() < ENetMode::NM_Client) 
 	{
-		// Could have a namespace with all the stats and leaderboard names as consts for easier access and less error prone
-		const FString CollectionStatName = "NUMBEROFCOLLECTEDCOINS";
-		const FString CollectionLeaderboard = "COINCOLLECTORSLEADERBOARD";
-		PlayerState->UpdateStat(CollectionStatName, 1);
+		// Stats and leaderboard names are predefined as consts for easier access and less error prone, as well as a typedef for readability
+		PlayerState->UpdateStat(FDefinedStatNames::CollectedCoins, 1);
 	}
 }
 

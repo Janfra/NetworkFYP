@@ -8,7 +8,13 @@ public class NetworkFYP : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "NetCore", "OnlineSubsystem", "OnlineSubsystemUtils", "OnlineSubsystemEOS" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			"Core", "CoreUObject", "Engine", 
+			"InputCore", "EnhancedInput", "UMG", 
+			"NetCore", "OnlineSubsystem", "OnlineSubsystemUtils", 
+			"OnlineSubsystemEOS" 
+		});
 
 		/* Sets the game to be in P2P mode instead of dedicated server */
 		PrivateDefinitions.Add("P2PMODE=1");

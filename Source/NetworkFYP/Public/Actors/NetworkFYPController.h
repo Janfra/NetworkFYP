@@ -79,7 +79,7 @@ protected:
 #if P2PMODE
 	void CreateLobby(FName KeyName = "KeyName", FString KeyValue = "KeyValue");
 
-	void OnHandleCreateLobbyCompleted(FName EOSLobbyName, bool bWasSuccessful, FSoftObjectPath Level);
+	void OnHandleCreateLobbyCompleted(FName EOSLobbyName, bool bWasSuccessful);
 
 	void SetupNotifications();
 
