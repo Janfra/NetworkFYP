@@ -1,6 +1,9 @@
 # NetworkFYP
  Exploring creating a simple online multiplayer game using Unreal Engine 5.4.4 and Epic Online Services (EOS) with the EOS subsystem plugin.
 
+> [!NOTE]
+> Project DefaultEngine.ini configuration file will not be updated directly for security concerns, please instead refer to the DefaultEngine_GitSafeCopy.txt instead.
+
 > [!WARNING]
 > EOS credentials were removed from project. Place your own credentials for testing if you would like.
 
