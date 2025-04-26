@@ -1,6 +1,9 @@
 # NetworkFYP
  Exploring creating a simple online multiplayer game using Unreal Engine 5.4.4
 
+> [!WARNING]
+> Epic Online Services credentials were removed from project. Place your own credentials for testing if you would like.
+
 # Progress
 ## 1.0:
 ### FEATURES
