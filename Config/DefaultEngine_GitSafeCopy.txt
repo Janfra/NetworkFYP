@@ -1,5 +1,5 @@
 [/Script/EngineSettings.GameMapsSettings]
-GameDefaultMap=/Game/ThirdPerson/Maps/MainMenu.MainMenu
+GameDefaultMap=/Game/ThirdPerson/Maps/ThirdPersonMap.ThirdPersonMap
 EditorStartupMap=/Game/ThirdPerson/Maps/ThirdPersonMap.ThirdPersonMap
 GlobalDefaultGameMode=/Game/ThirdPerson/BP_GM_Game.BP_GM_Game_C
 
@@ -210,6 +210,9 @@ AppliedDefaultGraphicsPerformance=Scalable
 +ActiveGameNameRedirects=(OldGameName="/Script/TP_ThirdPerson",NewGameName="/Script/NetworkFYP")
 +ActiveClassRedirects=(OldClassName="TP_ThirdPersonGameMode",NewClassName="NetworkFYPGameMode")
 +ActiveClassRedirects=(OldClassName="TP_ThirdPersonCharacter",NewClassName="NetworkFYPCharacter")
+!NetDriverDefinitions=ClearArray
++NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="SocketSubsystemEOS.NetDriverEOSBase",DriverClassNameFallback="OnlineSubsystemUtils.IpNetDriver")
++NetDriverDefinitions=(DefName="DemoNetDriver",DriverClassName="/Script/Engine.DemoNetDriver",DriverClassNameFallback="/Script/Engine.DemoNetDriver")
 
 [/Script/AndroidFileServerEditor.AndroidFileServerRuntimeSettings]
 bEnablePlugin=True
@@ -300,15 +303,25 @@ bEnabled=true
 DefaultPlatformService=EOS
 
 [/Script/Engine.GameEngine]
-+NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="OnlineSubsystemEOS.NetDriverEOS",DriverClassNameFallback="OnlineSubsystemUtils.IpNetDriver")
+!NetDriverDefinitions=ClearArray
++NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="SocketSubsystemEOS.NetDriverEOSBase",DriverClassNameFallback="OnlineSubsystemUtils.IpNetDriver")
++NetDriverDefinitions=(DefName="DemoNetDriver",DriverClassName="/Script/Engine.DemoNetDriver",DriverClassNameFallback="/Script/Engine.DemoNetDriver")
 
 [/Script/OnlineSubsystemEOS.NetDriverEOS]
 ;Set this to false when running in client-server mode, set to true when in P2P mode. Used for the lobbies made by players.
 bIsUsingP2PSockets=true
 
+;This section enables the EOS OSS
+[OnlineSubsystemEOS]
+bEnabled=true
+ 
+;This section sets EOS as the platform
+[OnlineSubsystem]
+DefaultPlatformService=EOS
+
 [/Script/OnlineSubsystemEOS.EOSSettings]
 CacheDir=CacheDir
-DefaultArtifactName= Name matching id if shipping with epic store
+DefaultArtifactName=<Name matching id if shipping with epic store>
 RTCBackgroundMode=
 TickBudgetInMilliseconds=0
 bEnableOverlay=True
@@ -316,6 +329,9 @@ bEnableSocialOverlay=True
 bEnableEditorOverlay=True
 bPreferPersistentAuth=False
 TitleStorageReadChunkLength=0
+; Fill with your own credentials available in product page in developer portal
++Artifacts=(ArtifactName="",ClientId="",ClientSecret="",ProductId="",SandboxId="",DeploymentId="",ClientEncryptionKey="")
++Artifacts=(ArtifactName="Server",ClientId="",ClientSecret="",ProductId="",SandboxId="",DeploymentId="",ClientEncryptionKey="")
 -AuthScopeFlags=BasicProfile
 -AuthScopeFlags=FriendsList
 -AuthScopeFlags=Presence
