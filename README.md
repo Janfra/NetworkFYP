@@ -1,6 +1,12 @@
 # NetworkFYP
  Exploring creating a simple online multiplayer game using Unreal Engine 5.4.4
 
+> [!NOTE]
+> This branch was created to keep a history of attempting to replicate the project progress using the `OnlineServiceEOS` plugin. After encountering an error that provided an error code that I was unable to find documentation for, I decided to instead continue working on the main branch.
+
+> [!WARNING]
+> This branch is unable to successfully create a lobby.
+
 # Progress
 ## 1.0:
 ### FEATURES
